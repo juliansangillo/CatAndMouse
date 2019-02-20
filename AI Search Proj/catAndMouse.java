@@ -23,7 +23,7 @@ class Board {
     ArrayList[] moves;
     
     ArrayList cat = new ArrayList<Integer>();
-    
+  
     Board() {
 
         position = new int[2][2];
