@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class catAndMouse {
 
     public static void main(String args[]) {
@@ -9,56 +11,7 @@ public class catAndMouse {
 
         Board b = new Board();
 
-        b.position[1][0].hasACat = true;    //This is just temporary. It sets position 2 as a cat for now.
         b.print();
-
-    }
-
-}
-
-class Pos {
-
-    Boolean hasACat = false;
-    
-    int label;
-    int[] move = new int[4];
-
-    Pos(int label) {
-
-        this.label = label;
-
-    }
-
-    void setMoves(int move0, int move1, int move2, int move3) {
-
-        move[0] = move0;
-        move[1] = move1;
-        move[2] = move2;
-        move[3] = move3;
-
-    }
-    void setMoves(int move0, int move1, int move2) {
-
-        move[0] = move0;
-        move[1] = move1;
-        move[2] = move2;
-        move[3] = -1;
-
-    }
-    void setMoves(int move0, int move1) {
-
-        move[0] = move0;
-        move[1] = move1;
-        move[2] = -1;
-        move[3] = -1;
-
-    }
-    void setMoves(int move0) {
-
-        move[0] = move0;
-        move[1] = -1;
-        move[2] = -1;
-        move[3] = -1;
 
     }
 
@@ -66,26 +19,30 @@ class Pos {
 
 class Board {
 
-    Pos[][] position;
+    int[][] position;
+    ArrayList[] moves;
     
+    ArrayList cat = new ArrayList<Integer>();
+  
     Board() {
 
-        position = new Pos[2][2];
+        position = new int[2][2];
+        moves = new ArrayList[2 * 2];
 
         for(int i = 0; i < 2; i++)
             for(int j = 0; j < 2; j++)
-                position[i][j] = new Pos(2 * i + j);
+                position[i][j] = 2 * i + j;
 
         for(int i = 0; i < 2; i++)
-            for(int j = 0; j < 2; j++)
-                if(position[i][j] == position[0][0])
-                    position[i][j].setMoves(position[i][j + 1].label, position[i + 1][j].label);
-                else if(position[i][j] == position[0][1])
-                    position[i][j].setMoves(position[i][j - 1].label, position[i + 1][j].label);
-                else if(position[i][j] == position[1][0])
-                    position[i][j].setMoves(position[i][j + 1].label, position[i - 1][j].label);
-                else if(position[i][j] == position[1][1])
-                    position[i][j].setMoves(position[i][j - 1].label, position[i - 1][j].label);
+            for(int j = 0; j < 2; j++) {
+                moves[2 * i + j] = new ArrayList<Integer>();
+                try { moves[2 * i + j].add(position[i][j - 1]); } catch(Exception e) {};
+                try { moves[2 * i + j].add(position[i][j + 1]); } catch(Exception e) {};
+                try { moves[2 * i + j].add(position[i - 1][j]); } catch(Exception e) {};
+                try { moves[2 * i + j].add(position[i + 1][j]); } catch(Exception e) {};
+            }
+
+        cat.add(2);                     //This is just temporary. It sets position 2 as a cat for now.
         
     }
 
@@ -93,15 +50,13 @@ class Board {
         
         for(int i = 0; i < 2; i++) {
             for(int j = 0; j < 2; j++)
-                System.out.print(position[i][j].label + "   ");
+                System.out.print(position[i][j] + "   ");
             System.out.print('\n');
         }
 
         System.out.print("Cats: ");
-        for(int i = 0; i < 2; i++)
-            for(int j = 0; j < 2; j++)
-                if(position[i][j].hasACat)
-                    System.out.print(position[i][j].label + "   ");
+        for(int i = 0; i < cat.size(); i++)
+            System.out.print(cat.get(i) + "     ");
         System.out.print('\n');
 
         System.out.print("Mouse: ");
