@@ -67,7 +67,6 @@ class Pos {
 class Board {
 
     Pos[][] position;
-    Pos start, goal;
     
     Board() {
 
@@ -88,9 +87,6 @@ class Board {
                 else if(position[i][j] == position[1][1])
                     position[i][j].setMoves(position[i][j - 1].label, position[i - 1][j].label);
         
-        start = position[0][0];
-        goal = position[1][1];
-
     }
 
     void print() {
