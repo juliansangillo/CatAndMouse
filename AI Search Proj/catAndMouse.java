@@ -155,7 +155,63 @@ class InformedMouse extends Mouse {
         super(b);
 
     }
+    
+    
+    for(int i = 0; i < 2; i++)
+        for(int j = 0; j < 2; j++) {
+        	if(heuristics[2 * i + j] != isCat)
+        	{
+        		heuristics[2 * i + j] = new ArrayList<Integer>();
+        		heuristics[2 * i + j] = heuristic(i, j, 1, 1);
+        	}
+        }
+    
+    ArrayList aStarSearch(int current, int goal)
+    {
+    	ArrayList path = null;
 
+        visited[current] = true;
+        
+        ArrayList neighbors = b.moves[current];
+        
+        int j = 0;
+        int lowest = 99;
+        for(int i = 0; i < neighbors.size(); i++)
+        {
+        	if(lowest > (int)neighbor.get[i] && != goal && != visited[(int)neighbors.get(i)]) 
+        	{
+        		j = i;
+        		int lowest = (int)neighbor.get[i];
+        	}
+        	else if((int)neighbor.get[i] == goal)
+            {
+            	path = new ArrayList<Integer>();
+                path.add(goal);
+                break;
+            }
+            path = aStarSearch((int)neighbor.get[j], goal);
+        }
+        
+        if(path == null) {
+            path = new ArrayList<Integer>();
+            path.add(-1);
+        }
 
+        path.add(0, current);
 
+        return path;
+    }
+    
+    int heuristic(int currentX, int currentY, int goalX, int goalY)
+    {    	
+    	int dx = abs(currentX - goalX);
+    	int dy = abs(currentY - goalY);
+    	int h = dx + dy;
+    	return h;
+    }
+    
+    
+    
+    
+    
 }
