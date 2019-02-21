@@ -8,13 +8,15 @@
             "type": "java",
             "name": "CodeLens (Launch) - catAndMouse",
             "request": "launch",
-            "mainClass": "catAndMouse"
+            "mainClass": "catAndMouse",
+            "console": "externalTerminal"
         },
         {
             "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "${file}",
+            "console": "externalTerminal"
         }
     ]
 }
