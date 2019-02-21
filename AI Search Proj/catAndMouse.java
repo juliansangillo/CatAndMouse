@@ -10,8 +10,13 @@ public class catAndMouse {
         //algorithms right.
 
         Board b = new Board();
+        UninformedMouse mouse = new UninformedMouse(b);
+
+        ArrayList path;
 
         b.print();
+        path = mouse.depthFirstSearch(0, 3);
+        mouse.printPath(path);
 
     }
 
@@ -60,9 +65,6 @@ class Board {
             System.out.print(cat.get(i) + "     ");
         System.out.print('\n');
 
-        System.out.print("Mouse: ");
-        System.out.print('\n');
-
     }
 
 }
@@ -71,31 +73,87 @@ class Board {
 class Mouse {
 
     Board b;
+    Boolean[] visited;
 
-    int start, goal;
+    Mouse(Board b) {
 
-    Mouse(Board b, int start, int goal) {
         this.b = b;
-        this.start = start;
-        this.goal = goal;
+        visited = new Boolean[2 * 2];
+
+        for(int i = 0; i < 2 * 2; i++) {
+            visited[i] = false;
+        }
+
+    }
+
+    Boolean isCat(int position) {
+
+        for(int i = 0; i < b.cat.size(); i++)
+            if(position == (int)b.cat.get(i))
+                return true;
+
+        return false;
     }
 
 }
 
 class UninformedMouse extends Mouse {
 
-    UninformedMouse(Board b, int start, int goal) {
-        super(b, start, goal);
+    UninformedMouse(Board b) {
+
+        super(b);
+
     }
 
-    
+    ArrayList depthFirstSearch(int current, int goal) {
+
+        ArrayList path = null;
+
+        visited[current] = true;
+        ArrayList neighbors = b.moves[current];
+
+        for(int i = 0; i < neighbors.size(); i++)
+            if((int)neighbors.get(i) != goal && !visited[(int)neighbors.get(i)] && !isCat((int)neighbors.get(i)))
+                path = depthFirstSearch((int)neighbors.get(i), goal);
+            else if ((int)neighbors.get(i) == goal) {
+                path = new ArrayList<Integer>();
+                path.add(goal);
+                break;
+            }
+
+        if(path == null) {
+            path = new ArrayList<Integer>();
+            path.add(-1);
+        }
+
+        path.add(0, current);
+
+        return path;
+    }
+
+    void printPath(ArrayList path) {
+
+        System.out.print("Mouse: ");
+        for(int i = 0; i < path.size() - 1; i++)
+            System.out.print(path.get(i) + " -> ");
+        System.out.print(path.get(path.size() - 1) + "\n");
+
+        System.out.print('\n');
+        if((int)path.get(path.size() - 1) == -1)
+            System.out.println("The mouse could not make it to the end alive!");
+        else
+            System.out.println("The mouse made it to the goal safely.");
+
+    }
 
 }
 
 class InformedMouse extends Mouse {
 
-    InformedMouse(Board b, int start, int goal) {
-        super(b, start, goal);
+    InformedMouse(Board b) {
+
+        super(b);
+
     }
 
 
