@@ -17,6 +17,7 @@ public class catAndMouse {
 
 }
 
+//Cat and Mouse Board Setup**********************************************************************
 class Board {
 
     int[][] position;
@@ -66,13 +67,36 @@ class Board {
 
 }
 
-class UninformedMouse {
+//AI Mouse Algorithms***************************************************************************
+class Mouse {
+
+    Board b;
+
+    int start, goal;
+
+    Mouse(Board b, int start, int goal) {
+        this.b = b;
+        this.start = start;
+        this.goal = goal;
+    }
+
+}
+
+class UninformedMouse extends Mouse {
+
+    UninformedMouse(Board b, int start, int goal) {
+        super(b, start, goal);
+    }
 
     
 
 }
 
-class InformedMouse {
+class InformedMouse extends Mouse {
+
+    InformedMouse(Board b, int start, int goal) {
+        super(b, start, goal);
+    }
 
 
 
