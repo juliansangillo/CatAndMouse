@@ -94,9 +94,9 @@ class Board {
         for(int i = 0; i < length; i++)
             for(int j = 0; j < length; j++) {
                 moves[length * i + j] = new ArrayList<Integer>();
+                try { moves[length * i + j].add(position[i - 1][j]); } catch(Exception e) {};
                 try { moves[length * i + j].add(position[i][j - 1]); } catch(Exception e) {};
                 try { moves[length * i + j].add(position[i][j + 1]); } catch(Exception e) {};
-                try { moves[length * i + j].add(position[i - 1][j]); } catch(Exception e) {};
                 try { moves[length * i + j].add(position[i + 1][j]); } catch(Exception e) {};
             }
         
@@ -112,8 +112,8 @@ class Board {
         
         for(int i = 0; i < length; i++) {
             for(int j = 0; j < length; j++)
-                System.out.print(position[i][j] + "   ");
-            System.out.print('\n');
+                System.out.print(position[i][j] + "\t");
+            System.out.print("\n\n");
         }
 
     }
@@ -238,15 +238,20 @@ class InformedMouse extends Mouse {
 
         //A* Loop******************************************************************
         do {
-            int f = 0;
-            Integer highestFNode = 0;
+            int f = b.length * b.length;
+            Integer lowestFNode = 0;
 
             for(int i = 0; i < b.moves[current].size(); i++) {
                 Integer node = (int)b.moves[current].get(i);
 
-                if (!closedList.contains(node)) {
+                if (!closedList.contains(node) && !openList.contains(node)) {
                     if(isCat((int)node))
                         closedList.add(node);
+                    else if(node == goal) {
+                        found = true;
+                        parent[goal] = current;
+                        break;
+                    }
                     else {
                         parent[(int)node] = current;
                         openList.add(node);
@@ -254,27 +259,21 @@ class InformedMouse extends Mouse {
                 }
             }
 
-            for(int j = 0; j < openList.size(); j++) {
-                int item = (int)openList.get(j);
+            if(!found) {
+                for(int j = 0; j < openList.size(); j++) {
+                    int item = (int)openList.get(j);
 
-                if(item == goal) {
-                    found = true;
-                    break;
-                }
-                else {
                     g[item] = g[parent[item]] + 1;
                 
-                    if(g[item] + h[item] > f) {
+                    if(g[item] + h[item] < f) {
                         f = g[item] + h[item];
-                        highestFNode = (int)openList.get(j);
+                        lowestFNode = (int)openList.get(j);
                     }
                 }
-            }
 
-            if(!found) {
-                closedList.add(highestFNode);
-                openList.remove(highestFNode);
-                current = highestFNode;
+                closedList.add(lowestFNode);
+                openList.remove(lowestFNode);
+                current = lowestFNode;
             }
         } while (!found && !isOutOfMoves(closedList));        //Bug: stop A* too soon!
 
