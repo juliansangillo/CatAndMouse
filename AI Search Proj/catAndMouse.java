@@ -164,14 +164,15 @@ class UninformedMouse extends Mouse {
         ArrayList neighbors = b.moves[current];
 
         for(int i = 0; i < neighbors.size(); i++) {
-            if((int)neighbors.get(i) != goal && !visited[(int)neighbors.get(i)] && !isCat((int)neighbors.get(i)))
-                path = depthFirstSearch((int)neighbors.get(i), goal);
-            else if ((int)neighbors.get(i) == goal) {
+            int neighbor = (int)neighbors.get(i);
+
+            if(neighbor != goal && !visited[neighbor] && !isCat(neighbor))
+                path = depthFirstSearch(neighbor, goal);
+            else if (neighbor == goal) {
                 path = new ArrayList<Integer>();
                 path.add(goal);
-            }
-            if (path != null)
                 break;
+            }
         }
 
         if(path != null)    
@@ -190,62 +191,129 @@ class InformedMouse extends Mouse {
 
     }
     
-    
-    for(int i = 0; i < 2; i++)
-        for(int j = 0; j < 2; j++) {
-        	if(heuristics[2 * i + j] != isCat)
-        	{
-        		heuristics[2 * i + j] = new ArrayList<Integer>();
-        		heuristics[2 * i + j] = heuristic(i, j, 1, 1);
-        	}
-        }
-    
-    ArrayList aStarSearch(int current, int goal)
-    {
-    	ArrayList path = null;
+    ArrayList aStarSearch(int start, int goal) {
+        
+        //Initialize Variables***************************************************
+        int[] h = new int[b.length * b.length];
 
-        visited[current] = true;
-        
-        ArrayList neighbors = b.moves[current];
-        
-        int j = 0;
-        int lowest = 99;
-        for(int i = 0; i < neighbors.size(); i++)
         {
-        	if(lowest > (int)neighbor.get[i] && != goal && != visited[(int)neighbors.get(i)]) 
-        	{
-        		j = i;
-        		int lowest = (int)neighbor.get[i];
-        	}
-        	else if((int)neighbor.get[i] == goal)
-            {
-            	path = new ArrayList<Integer>();
-                path.add(goal);
-                break;
-            }
-            path = aStarSearch((int)neighbor.get[j], goal);
-        }
-        
-        if(path == null) {
-            path = new ArrayList<Integer>();
-            path.add(-1);
+            int goalX, goalY;
+            goalX = goal % b.length;
+            goalY = goal / b.length;
+
+            initialize(goalX, goalY, h);
         }
 
-        path.add(0, current);
+        ArrayList path;
+        int[] g = new int[b.length * b.length];
+        int[] parent = new int[b.length * b.length];
+        ArrayList openList = new ArrayList<Integer>();
+        ArrayList closedList = new ArrayList<Integer>();
+
+        Boolean found = false;                  //True if goal has been found, false otherwise
+        Integer current = start;
+        closedList.add(current);
+        g[start] = 0;
+
+        //A* Loop******************************************************************
+        do {
+            int f = 0;
+            Integer highestFNode;
+
+            for(int i = 0; i < b.moves[current].size(); i++) {
+                Integer node = b.moves[current].get(i);
+
+                if (!closedList.contains(node)) {
+                    if(isCat((int)node))
+                        closedList.add(node);
+                    else {
+                        parent[(int)node] = current;
+                        openList.add(node);
+                    }
+                }
+            }
+
+            for(int j = 0; j < openList.size(); j++) {
+                int item = (int)openList.get(j);
+
+                if(item == goal) {
+                    found = true;
+                    break;
+                }
+                else {
+                    g[item] = g[parent[item]] + 1;
+                
+                    if(g[item] + h[item] > f) {
+                        f = g[item] + h[item];
+                        highestFNode = openList.get(j);
+                    }
+                }
+            }
+
+            if(!found) {
+                closedList.add(highestFNode);
+                openList.remove(highestFNode);
+                current = highestFNode;
+            }
+        } while (!found && !isOutOfMoves(closedList));        //Bug: stop A* too soon!
+
+        if (found) {
+            path = tracePathBack(start, goal, parent);
+        }
+        else {
+            path = null;
+        }
+        
+        return path;
+    }
+
+    void initialize(int goalX, int goalY, int[] h) {
+
+        for(int i = 0; i < b.length; i++)
+            for(int j = 0; j < b.length; j++) {
+                int position = b.length * i + j;
+
+                if(isCat(position))
+                    h[position] = 0;
+                else
+                    h[position] = abs(goalX - j) + abs(goalY - i);      //Manhattan heuristic formula
+            }
+
+    }
+
+    Boolean isOutOfMoves(ArrayList closedList) {
+
+        for(int i = 0; i < closedList.size(); i++) {
+            Integer closedItem = closedList.get(i);
+
+            if(!isCat((int)closedItem))
+                for(int j = 0; j < b.moves[(int)closedItem].size(); j++) {
+                    Integer move = b.moves[(int)closedItem].get(j);
+
+                    if(!closedList.contains(move))
+                        return false;
+                }
+        }
+
+        return true;
+    }
+
+    ArrayList tracePathBack(int start, int goal, int[] parent) {
+
+        ArrayList path = new ArrayList<Integer>();
+        int p;
+
+        path.add(goal);
+        p = parent[goal];
+
+        while(p != start) {
+            path.add(0, p);
+            p = parent[p];
+        }
+        
+        path.add(0, start);
 
         return path;
     }
-    
-    int heuristic(int currentX, int currentY, int goalX, int goalY)
-    {    	
-    	int dx = abs(currentX - goalX);
-    	int dy = abs(currentY - goalY);
-    	int h = dx + dy;
-    	return h;
-    }
-    
-    
-    
-    
     
 }
