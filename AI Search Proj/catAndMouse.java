@@ -4,50 +4,67 @@ import java.util.ArrayList;
 public class catAndMouse {
 
     public static void main(String args[]) {
-        
-        //Later, we will also allow us to input the size of the board,
-        //the start and goal of the mouse, and the cat positions.
-        //For now, we will keep it simple and use a 2 by 2 board until we get the search
-        //algorithms right.
+
+        char repeat;
 
         Scanner reader = new Scanner(System.in);
-        int length;
-        System.out.print("Enter the length of the board: ");
-        length = reader.nextInt();
-        System.out.print('\n');
-        Board b = new Board(length);
-        b.print();
+        do {
+            int alg;
+            System.out.print("The mouse will use: Depth-First (0) or A* (1)? Enter 0 or 1 to decide: ");
+            alg = reader.nextInt();
+            System.out.print('\n');
 
-        int start, goal;
-        System.out.print("Enter the mouse starting position: ");
-        start = reader.nextInt();
-        System.out.print("Enter the goal position: ");
-        goal = reader.nextInt();
+            int length;
+            System.out.print("Enter the length of the board: ");
+            length = reader.nextInt();
+            System.out.print('\n');
+            Board b = new Board(length);
+            b.print();
+
+            int start, goal;
+            System.out.print("Enter the mouse starting position: ");
+            start = reader.nextInt();
+            System.out.print("Enter the goal position: ");
+            goal = reader.nextInt();
 
 
-        int cat;
-        System.out.println("Enter all positions with cats or -1 to stop.");
-        System.out.print("Cat: ");
-        cat = reader.nextInt();
-        while(cat != -1) {
-            b.setCat(cat);
+            int cat;
+            System.out.println("Enter all positions with cats or -1 to stop.");
             System.out.print("Cat: ");
             cat = reader.nextInt();
-        }
-        System.out.print('\n');
+            while(cat != -1) {
+                b.setCat(cat);
+                System.out.print("Cat: ");
+                cat = reader.nextInt();
+            }
+            System.out.print('\n');
+
+            ArrayList path = null;
+
+            b.print();
+            System.out.print("Cat: ");
+            for(int i = 0; i < b.cat.size(); i++)
+                System.out.print(b.cat.get(i) + "     ");
+            System.out.print('\n');
+
+            Mouse mouse = null;
+            switch(alg) {
+                case 0:
+                    mouse = new UninformedMouse(b);
+                    path = mouse.depthFirstSearch(start, goal);
+                    break;
+                case 1:
+                    mouse = new InformedMouse(b);
+                    path = mouse.aStarSearch(start, goal);
+                    break;
+            }
+            mouse.printPath(path);
+
+            System.out.print("Do you want to play again? ('Y' for yes or 'N' for no) ");
+            repeat = reader.next().charAt(0);
+            System.out.print('\n');
+        } while(repeat == 'Y' || repeat == 'y');
         reader.close();
-
-        UninformedMouse mouse = new UninformedMouse(b);
-        ArrayList path;
-
-        b.print();
-        System.out.print("Cat: ");
-        for(int i = 0; i < b.cat.size(); i++)
-            System.out.print(b.cat.get(i) + "     ");
-        System.out.print('\n');
-
-        path = mouse.depthFirstSearch(start, goal);
-        mouse.printPath(path);
 
     }
 
@@ -128,6 +145,9 @@ class Mouse {
 
         return false;
     }
+
+    ArrayList depthFirstSearch(int current, int goal) { return null; }
+    ArrayList aStarSearch(int start, int goal) { return null; }
 
     void printPath(ArrayList path) {
 
@@ -219,10 +239,10 @@ class InformedMouse extends Mouse {
         //A* Loop******************************************************************
         do {
             int f = 0;
-            Integer highestFNode;
+            Integer highestFNode = 0;
 
             for(int i = 0; i < b.moves[current].size(); i++) {
-                Integer node = b.moves[current].get(i);
+                Integer node = (int)b.moves[current].get(i);
 
                 if (!closedList.contains(node)) {
                     if(isCat((int)node))
@@ -246,7 +266,7 @@ class InformedMouse extends Mouse {
                 
                     if(g[item] + h[item] > f) {
                         f = g[item] + h[item];
-                        highestFNode = openList.get(j);
+                        highestFNode = (int)openList.get(j);
                     }
                 }
             }
@@ -277,7 +297,7 @@ class InformedMouse extends Mouse {
                 if(isCat(position))
                     h[position] = 0;
                 else
-                    h[position] = abs(goalX - j) + abs(goalY - i);      //Manhattan heuristic formula
+                    h[position] = Math.abs(goalX - j) + Math.abs(goalY - i);      //Manhattan heuristic formula
             }
 
     }
@@ -285,11 +305,11 @@ class InformedMouse extends Mouse {
     Boolean isOutOfMoves(ArrayList closedList) {
 
         for(int i = 0; i < closedList.size(); i++) {
-            Integer closedItem = closedList.get(i);
+            Integer closedItem = (int)closedList.get(i);
 
             if(!isCat((int)closedItem))
                 for(int j = 0; j < b.moves[(int)closedItem].size(); j++) {
-                    Integer move = b.moves[(int)closedItem].get(j);
+                    Integer move = (int)b.moves[(int)closedItem].get(j);
 
                     if(!closedList.contains(move))
                         return false;
