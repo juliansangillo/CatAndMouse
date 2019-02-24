@@ -171,8 +171,9 @@ class UninformedMouse extends Mouse {
             else if (neighbor == goal) {
                 path = new ArrayList<Integer>();
                 path.add(goal);
-                break;
             }
+            if(path != null)
+                break;
         }
 
         if(path != null)    
