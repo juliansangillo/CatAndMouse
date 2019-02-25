@@ -157,7 +157,7 @@ class Mouse {
             System.out.print("Mouse: ");
             for(int i = 0; i < path.size() - 1; i++)
                 System.out.print(path.get(i) + " -> ");
-            System.out.print(path.get(path.size() - 1) + "\n");
+            System.out.print(path.get(path.size() - 1) + "\nTotal path cost: " + (path.size() - 1) + '\n');
 
             System.out.print('\n');
             System.out.println("The mouse made it to the goal safely.");
