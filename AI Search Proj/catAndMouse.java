@@ -270,7 +270,7 @@ class InformedMouse extends Mouse {
                 openList.remove(lowestFNode);
                 current = lowestFNode;
             }
-        } while (!found && !isOutOfMoves(closedList));        //Bug: stop A* too soon!
+        } while (!found && !isOutOfMoves(closedList));
 
         if (found) {
             path = tracePathBack(start, goal, parent);
