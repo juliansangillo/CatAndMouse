@@ -51,7 +51,7 @@ public class catAndMouse {
             switch(alg) {
                 case 0:
                     mouse = new UninformedMouse(b);
-                    path = mouse.depthFirstSearch(start, goal);
+                    path = mouse.depthFirstSearch(start, goal, (b.length - 1) * 2);
                     break;
                 case 1:
                     mouse = new InformedMouse(b);
@@ -124,16 +124,10 @@ class Board {
 class Mouse {
 
     Board b;
-    Boolean[] visited;
 
     Mouse(Board b) {
 
         this.b = b;
-        visited = new Boolean[b.length * b.length];
-
-        for(int i = 0; i < b.length * b.length; i++) {
-            visited[i] = false;
-        }
 
     }
 
@@ -146,7 +140,7 @@ class Mouse {
         return false;
     }
 
-    ArrayList depthFirstSearch(int current, int goal) { return null; }
+    ArrayList depthFirstSearch(int current, int goal, int limit) { return null; }
     ArrayList aStarSearch(int start, int goal) { return null; }
 
     void printPath(ArrayList path) {
@@ -176,28 +170,29 @@ class UninformedMouse extends Mouse {
 
     }
 
-    ArrayList depthFirstSearch(int current, int goal) {
+    ArrayList depthFirstSearch(int current, int goal, int limit) {
 
         ArrayList path = null;
 
-        visited[current] = true;
-        ArrayList neighbors = b.moves[current];
+        if(limit != 0) {
+            ArrayList neighbors = b.moves[current];
 
-        for(int i = 0; i < neighbors.size(); i++) {
-            int neighbor = (int)neighbors.get(i);
+            for(int i = 0; i < neighbors.size(); i++) {
+                int neighbor = (int)neighbors.get(i);
 
-            if(neighbor != goal && !visited[neighbor] && !isCat(neighbor))
-                path = depthFirstSearch(neighbor, goal);
-            else if (neighbor == goal) {
-                path = new ArrayList<Integer>();
-                path.add(goal);
+                if(neighbor != goal && !isCat(neighbor))
+                    path = depthFirstSearch(neighbor, goal, limit - 1);
+                else if (neighbor == goal) {
+                    path = new ArrayList<Integer>();
+                    path.add(goal);
+                }
+                if(path != null)
+                    break;
             }
-            if(path != null)
-                break;
-        }
 
-        if(path != null)    
-            path.add(0, current);
+            if(path != null)    
+                path.add(0, current);
+        }
 
         return path;
     }
